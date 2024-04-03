@@ -16,6 +16,11 @@
     />
 
     <title>{% block title %}Home{% endblock %}</title>
+    <style>
+      .container {
+        margin-top: 15px; /* Adjust this value as needed */
+      }
+    </style>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -28,14 +33,13 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbar">
-        <div class="navbar-nav">
-          {% if user.is_authenticated %}
-          <a class="nav-item nav-link" id="home" href="/">Home</a>
-          <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
-          {% else %}
+        <div class="navbar-nav">  
+          <a class="nav-item nav-link" id="home" href="/home">Home</a>
+          <a class="nav-item nav-link" id="build" href="/build">Build A Lineup</a>
+          <a class="nav-item nav-link" id="about" href="/about">About</a>
+          <a class="nav-item nav-link" id="profile" href="/user">Profile</a>
           <a class="nav-item nav-link" id="login" href="/login">Login</a>
-          <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
-          {% endif %}
+          <a class="nav-item nav-link" id="login" href="/sign-up">Sign Up</a>
         </div>
       </div>
     </nav>
