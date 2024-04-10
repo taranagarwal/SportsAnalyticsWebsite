@@ -2,15 +2,29 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
+from flask_mail import Mail
 
 db = SQLAlchemy()
+mail = Mail()
 DB_NAME = "database.db"
+MAIL_SERVER = 'smtp.freesmtpservers.com' #need a mail server -- testing with a free one that doesn't work
+MAIL_PORT = 25
+MAIL_USE_TLS = False
+MAIL_USERNAME = None
+MAIL_PASSWORD = None
 
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'anthonyvolpeissogoodatshortstop'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['MAIL_SERVER'] = 'smtp.freesmtpservers.com'
+    app.config['MAIL_PORT'] = 25
+    app.config['MAIL_USE_TLS'] = False
+    app.config['MAIL_USERNAME'] = None
+    app.config['MAIL_PASSWORD'] = None
+
+    mail.init_app(app)
     db.init_app(app)
 
 

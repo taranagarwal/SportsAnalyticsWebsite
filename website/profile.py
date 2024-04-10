@@ -1,15 +1,15 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_user, login_required, current_user
 from .models import User
-from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
+from werkzeug.security import generate_password_hash, check_password_hash 
 
 profile = Blueprint('profile', __name__)
 
 @profile.route('/')
 @login_required
 def user():
-    return "<p>User</p>"
+    return render_template('profile.html', user=current_user)
 
 @profile.route('/change-password', methods=['GET', 'POST'])
 @login_required
@@ -45,5 +45,5 @@ def my_lineups():
 @profile.route('/my-players')
 @login_required
 def my_players():
-    return "<p>Lineups</p>"
+    return "<p>Players</p>"
 

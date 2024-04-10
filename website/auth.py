@@ -3,6 +3,10 @@ from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
+from flask_mail import Message
+from . import mail
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+
 
  
 
@@ -29,9 +33,38 @@ def login():
 
     return render_template("login.html", user=current_user)
 
+
+serializer = URLSafeTimedSerializer('anthonyvolpeissogoodatshortstop')
+
 @auth.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
-    return render_template("forgot-password.html")
+    if request.method == 'POST':
+        email = request.form.get('email')
+        token = serializer.dumps(email, salt='email-confirm-salt')
+        msg = Message('Password Reset Request', sender='noreply@yourdomain.com', recipients=[email])
+        link = url_for('auth.reset_with_token', token=token, _external=True)
+        msg.body = f'Your link to reset your password is {link}'
+        mail.send(msg)
+
+    return render_template("forgot-password.html", user=current_user)
+
+@auth.route('/reset-with-token/<token>', methods=['GET', 'POST'])
+def reset_with_token(token):
+    if request.method == 'POST':
+        password1 = request.form.get('password1')
+        password2 = request.form.get('password2')
+        if password1 != password2:
+            flash('New passwords must match', category='error')
+        elif len(password1) < 5:
+            flash('New password must be 5 characters or longer', category='error')
+        else:
+            hashed_new_password = generate_password_hash(password1, method='pbkdf2:sha256')
+            current_user.password = hashed_new_password
+            db.session.commit()
+            flash('Successfully changed password', category='success')
+            return redirect(url_for('views.home'))
+    return render_template('reset-password.html')
+
 
 @auth.route('/logout')
 @login_required

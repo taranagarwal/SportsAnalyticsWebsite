@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block content %}
+<div class="container profile-container">
+  <h2 class="profile-heading">User Profile</h2>
+  <div class="user-info">
+    <p class="user-detail"><span class="user-label">Name:</span> {{ user.name }}</p>
+    <p class="user-detail"><span class="user-label">Email:</span> {{ user.email }}</p>
+  </div>
+  <div class="button-group">
+    <a href="{{ url_for('profile.change_password') }}" class="profile-button btn-change">Change Password</a>
+    <a href="{{ url_for('profile.my_lineups') }}" class="profile-button btn-lineups">My Lineups</a>
+    <a href="{{ url_for('profile.my_players') }}" class="profile-button btn-players">My Players</a>
+  </div>
+</div>
+
+<style>
+  .profile-container {
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+  }
+  .profile-heading {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .user-info {
+    margin-bottom: 2rem;
+  }
+  .user-detail {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  .user-label {
+    font-weight: bold;
+  }
+  .button-group {
+    text-align: center;
+  }
+  .profile-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 0 10px;
+    text-decoration: none;
+    color: #fff;
+    border-radius: 4px;
+    transition: background-color 0.8s ease;
+  }
+  .btn-change { background-color: #007bff; }
+  .btn-lineups { background-color: #28a745; }
+  .btn-players { background-color: #28a745; }
+</style>
+{% endblock %}
