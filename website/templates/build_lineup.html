@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Build Lineup{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2 class="text-center">Lineup Optimization</h2>
+  <div id="player-inputs-container">
+    {% for i in range(9) %}
+    <div class="input-group mb-3 player-input-group">
+      <input type="text" class="form-control player-input" placeholder="Input Player {{ i+1 }}" aria-label="Player's name" data-player-index="{{ i }}">
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"></div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="text-center my-4">
+    <button type="button" id="calculate-btn" class="btn btn-primary" disabled>Calculate</button>
+    {% if user.is_authenticated %}
+    <button id="save-btn" class="btn btn-success" style="display: none;">Save</button>
+    {% endif %}
+  </div>
+
+  <div id="lineup-results" style="display: none;">
+    <h4>Top 3 Lineups:</h4>
+    <p id="lineup1">Lineup 1: </p>
+    <p id="lineup2">Lineup 2: </p>
+    <p id="lineup3">Lineup 3: </p>
+  </div>
+</div>
+
+{% block javascript %}
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    let playerInputGroups = document.querySelectorAll('.player-input-group');
+
+    // Function to create a dropdown item
+    function createDropdownItem(player, inputElement) {
+      let item = document.createElement('button');
+      item.classList.add('dropdown-item');
+      item.type = 'button';
+      item.innerText = `${player.player}, ${player.season}`;
+      item.onclick = function() {
+        inputElement.value = item.innerText;
+        inputElement.dataset.playerId = player.id;
+        inputElement.nextElementSibling.style.display = 'none';
+        checkAllPlayersSelected();
+      };
+      return item;
+    }
+
+    // Function to check if all player inputs have a selected player
+    function checkAllPlayersSelected() {
+      let allSelected = Array.from(playerInputGroups).every(inputGroup => 
+        inputGroup.querySelector('.player-input').dataset.playerId
+      );
+      document.getElementById('calculate-btn').disabled = !allSelected;
+    }
+
+    // Event listeners for player input fields
+    playerInputGroups.forEach(group => {
+      let input = group.querySelector('.player-input');
+      let dropdown = group.querySelector('.dropdown-menu');
+
+      input.addEventListener('input', function() {
+        let searchQuery = input.value.trim();
+        if (searchQuery.length < 2) {
+          dropdown.style.display = 'none';
+          return;
+        }
+        fetch(`/search_players?q=${encodeURIComponent(searchQuery)}`)
+        .then(response => response.json())
+        .then(players => {
+          dropdown.innerHTML = '';
+          players.forEach(player => {
+            dropdown.appendChild(createDropdownItem(player, input));
+          });
+          dropdown.style.display = 'block';
+        });
+      });
+    });
+
+    // Event listeners for Calculate and Save buttons
+    let calculateBtn = document.getElementById('calculate-btn');
+    let saveBtn = document.getElementById('save-btn');
+
+    calculateBtn.addEventListener('click', function() {
+      let playerIds = Array.from(playerInputGroups).map(group => 
+        group.querySelector('.player-input').dataset.playerId
+      );
+      // AJAX request to calculate lineup...
+    });
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function() {
+        let playerIds = Array.from(playerInputGroups).map(group => 
+          group.querySelector('.player-input').dataset.playerId
+        );
+        // AJAX request to save lineup...
+      });
+    }
+  });
+</script>
+{% endblock %}
+{% endblock %}

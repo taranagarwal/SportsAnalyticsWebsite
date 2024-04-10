@@ -19,6 +19,7 @@ class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player = db.Column(db.String(150))
     season = db.Column(db.String(4))
+    team = db.Column(db.String(10))
     pa = db.Column(db.Integer)
     ab = db.Column(db.Integer)
     h = db.Column(db.Integer)
