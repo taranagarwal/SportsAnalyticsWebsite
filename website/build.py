@@ -13,7 +13,6 @@ def search_players():
     # Search for players whose name contains the query
     players = Player.query.filter(Player.player.ilike(f'%{query}%')).all()
 
-    # Transform the results into a list of dicts to send back as JSON
     results = [{
         'id': player.id,
         'player': player.player,
@@ -22,7 +21,7 @@ def search_players():
 
     return jsonify(results)
 
-@build.route('/build_lineup')
+@build.route('/build-lineup')
 def login():
     return render_template("build_lineup.html", user=current_user)
 
