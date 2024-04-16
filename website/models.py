@@ -19,7 +19,7 @@ class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player = db.Column(db.String(150))
     season = db.Column(db.String(4))
-    team = db.Column(db.String(10))
+    team = db.Column(db.String(15))
     plate_appearances = db.Column(db.Integer)
     hits = db.Column(db.Integer)
     oneB = db.Column(db.Integer)
@@ -29,7 +29,7 @@ class Player(db.Model):
     walks = db.Column(db.Integer)
     intentional_walks = db.Column(db.Integer)
     stolen_bases = db.Column(db.Integer)
-    sprint_coeff = db.Column(db.Float)
+    speed_factor = db.Column(db.Float)
 
 
 class CustomPlayer(db.Model):
@@ -46,7 +46,7 @@ class CustomPlayer(db.Model):
     walks = db.Column(db.Integer)
     intentional_walks = db.Column(db.Integer)
     stolen_bases = db.Column(db.Integer)
-    sprint_coeff = db.Column(db.Float)
+    speed_factor = db.Column(db.Float)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 class User(db.Model, UserMixin):

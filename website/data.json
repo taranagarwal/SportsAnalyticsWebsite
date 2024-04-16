@@ -1,0 +1,17 @@
+[
+    {
+        "player": "Kyle Higashioka",
+        "season": "2023",
+        "team": "Yankees",
+        "plate_appearances": 260,
+        "hits": 57,
+        "oneB": 10,
+        "twoB": 13,
+        "threeB": 0,
+        "home_runs": 10,
+        "walks": 14,
+        "intentional_walks": 10,
+        "stolen_bases": 0,
+        "speed_factor":5
+    }
+]

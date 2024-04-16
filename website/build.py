@@ -6,7 +6,7 @@ build = Blueprint('build', __name__)
 
 @build.route('/search_players')
 def search_players():
-    query = request.args.get('q')
+    query = request.args.get('q', '')
     if not query:
         return jsonify([])  # No query provided, return empty list
 
