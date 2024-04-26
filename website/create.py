@@ -5,9 +5,9 @@ from itertools import permutations
 import typing
 from tqdm import tqdm
 
-from LinearWeights import LinearWeights as LW
-from PTM import PTM
-from structures import Node, NewNode
+from .LinearWeights import LinearWeights as LW
+from .PTM import PTM
+from .structures import Node, NewNode
 
 class Create():
     """
@@ -16,7 +16,8 @@ class Create():
     self.hypergroups : should end up being a List of 3024 elements, each element is a List of 4 subelements, each subelement is a List with
                        a player_name in the first index and corresponding PTM in the second index
     """
-    def __init__(self, DataAgent : PTM, hypergroup_size : int = 4):
+    def __init__(self, players, DataAgent : PTM, hypergroup_size : int = 4):
+        self.players = players
         self.DataAgent = DataAgent
         self.hypergroup_size = hypergroup_size
 
@@ -81,7 +82,7 @@ class Create():
         
         for idx in tqdm(range(0, len(all_hypergroups))):
             start_root = all_hypergroups[idx]
-            root = Node(start_root) 
+            root = Node(start_root, self.players) 
             picked_player_names = [i[0] for i in start_root]
             new_root = NewNode(picked_player_names, root.weight)
             directory[new_root] = []
@@ -90,7 +91,7 @@ class Create():
             next_node = start_root[1:]
             for new_node in unpicked:
                 next_node.append(new_node) 
-                weight_node = Node(next_node)
+                weight_node = Node(next_node, self.players)
                 new_direct_node = NewNode([i[0] for i in next_node], weight_node.weight)
                 directory[new_root].append(new_direct_node)
                 next_node.pop()
@@ -107,7 +108,7 @@ class Create():
         nodes = []
         for idx in tqdm(range(0, len(all_hypergroups))):
             start_root = all_hypergroups[idx]
-            root = Node(start_root)
+            root = Node(start_root, self.players)
             nodes.append(NewNode([i[0] for i in start_root], root.weight))
         
         return nodes
@@ -125,7 +126,8 @@ class Create():
             next_node = nodes_map[next_group]
             
             if current_node and next_node:
-                score += next_node.value - current_node.value
+                #score += next_node.value - current_node.value
+                score+=next_node.value
         return score
     
     def find_top_k_scores(self, players, nodes_map, k):

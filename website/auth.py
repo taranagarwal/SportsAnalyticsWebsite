@@ -12,6 +12,8 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
 auth = Blueprint('auth', __name__)
 
+serializer = URLSafeTimedSerializer('anthonyvolpeissogoodatshortstop')
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -33,8 +35,6 @@ def login():
 
     return render_template("login.html", user=current_user)
 
-
-serializer = URLSafeTimedSerializer('anthonyvolpeissogoodatshortstop')
 
 @auth.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -63,7 +63,7 @@ def reset_with_token(token):
             db.session.commit()
             flash('Successfully changed password', category='success')
             return redirect(url_for('views.home'))
-    return render_template('reset-password.html')
+    return render_template('reset-password.html', user=current_user)
 
 
 @auth.route('/logout')

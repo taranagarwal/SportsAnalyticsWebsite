@@ -44,7 +44,7 @@ def create_app():
     app.register_blueprint(build, url_prefix= '/')
     app.register_blueprint(profile, url_prefix= '/profile')
 
-    from .models import Player, User, Lineup, CustomPlayer
+    from .models import Player, User, Lineup
 
     with app.app_context():
         db.create_all() 

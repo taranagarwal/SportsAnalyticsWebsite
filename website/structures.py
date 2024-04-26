@@ -4,8 +4,8 @@ import heapq
 from itertools import permutations
 from typing import List
 
-from LinearWeights import LinearWeights
-from PTM import PTM
+from .LinearWeights import LinearWeights
+from .PTM import PTM
 
 """
 This file contains data structures relevant to creating hypergroups and exploring cycles. 
@@ -17,9 +17,9 @@ class Node():
 
     players_with_ptms : List[List[str, List[List]]]
     """
-    def __init__(self, players_with_ptms : List):
+    def __init__(self, players_with_ptms : List, players):
         self.players_with_ptms = players_with_ptms
-        LW = LinearWeights()
+        LW = LinearWeights(players)
         self.weight = LW.getRunExpectancyBOS(self.players_with_ptms)
 
 

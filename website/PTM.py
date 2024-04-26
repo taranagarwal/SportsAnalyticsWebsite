@@ -12,11 +12,44 @@ import os
 from sklearn.preprocessing import normalize
 
 class PTM:
-    def __init__(self, data):
-        self.data_rates = pd.read_csv(filepath_or_buffer=data, header = 0)
-        self.df = self.build_all_data()
-        self.player_names = self.lineup()
-        self.ptm_list = [self.generate_probability_matrix_real(self.df, name) for name in self.player_names]
+    def __init__(self, players):
+       self.players = players
+       data = {
+           "Unnamed: 0": list(range(9)),
+           "Rk": list(range(1, 10)),
+           "Pos": [player.pos for player in players],
+           "Name": [p.player for p in players],
+           "Age": [p.age for p in players],
+           "G": [p.g for p in players],
+           "PA": [p.pa for p in players],
+           "AB": [p.ab for p in players],
+           "R": [p.r for p in players],
+           "H": [p.h for p in players],
+           "2B": [p.twoB for p in players],
+           "3B": [p.threeB for p in players],
+           "HR": [p.hr for p in players],
+           "RBI": [p.rbi for p in players],
+           "SB": [p.sb for p in players],
+           "CS": [p.cs for p in players],
+           "BB": [p.bb for p in players],
+           "SO": [p.so for p in players],
+           "BA": [p.ba for p in players],
+           "OBP": [p.obp for p in players],
+           "SLG": [p.slg for p in players],
+           "OPS": [p.ops for p in players],
+           "OPS+": [p.opsPlus for p in players],
+           "TB": [p.tb for p in players],
+           "GDP": [p.gdp for p in players],
+           "HBP": [p.hbp for p in players],
+           "SH": [p.sh for p in players],
+           "SF": [p.sf for p in players],
+           "IBB": [p.ibb for p in players],
+           "SpF": [p.spf for p in players]
+        }
+       self.data_rates = pd.DataFrame(data)
+       self.player_names = self.lineup()
+       self.speed_factor = self.calc_speed_factor()
+       self.ptm_list = [self.generate_probability_matrix_real(self.data_rates, name) for name in self.player_names]
     
     #Building and cleaning data
 #    def fix_event_classification(self, data):
@@ -39,7 +72,7 @@ class PTM:
         new = f"{spliced[1]}, {spliced[0]}"
         return new
     
-    def build_all_data(self):
+    #def build_all_data(self):
         path = os.getcwd()
         data = []
         for file in os.listdir(path):
@@ -185,5 +218,121 @@ class PTM:
     def build_player_objects(self):
         players = []
         for i in range(0,9):
-            players.append([self.player_names[i], self.lineup_prob()[i].to_numpy(), self.ptm_list[i]])
+            players.append([self.player_names[i], self.lineup_prob()[i].to_numpy(), self.ptm_list[i], self.speed_factor[i], self.players[i].id])
+        
+        for i in range(0, len(players)):
+            players[i][2] = self.steals_adjustment(players[i])
+            
         return players
+    
+    def calc_speed_factor(self):
+        return self.data_rates["SpF"][0:9]*0.01
+    
+    def adjusted_PTM(self, speed_factors, player):
+        #speed_factors is list of SF of the three batters batting in front
+        #player is current player object
+        #let's make everything a function of the lead runner
+        PTM = player[2]
+        x = speed_factors[2]
+        y = speed_factors[1]
+        z = speed_factors[0]
+        
+        #0 outs, Runner on 1st starting state
+        
+        PTM[1][4] = player[1][0]*(1-((x-0.5)*0.4 + 0.3))+self.get_walk_and_strikeout_rate(player[0])[0] #from first to second on a single
+        PTM[1][5] = player[1][0]*(((x-0.5)*0.4 + 0.3)) #from first to third on a single
+        
+        #0 outs, Runner on 2nd starting state
+        PTM[2][1] = player[1][0]*((x-0.5)*0.4 + 0.6) #from second to home on a single
+        PTM[2][5] = player[1][0]*(1-((x-0.5)*0.4 + 0.6)) #from second to third on a single
+
+
+        #0 outs, runners first and second
+        PTM[4][5] = player[1][0]*((x-0.5)*0.4 + 0.6) # from first and second to first and third on a single
+        PTM[4][7] = player[1][0]*(1-((x-0.5)*0.4 + 0.6)) + self.get_walk_and_strikeout_rate(player[0])[0] # from first and second to bases loaded on a single
+        
+        #0 outs, runners first and third
+        PTM[5][4] = player[1][0]*(1-((y-0.5)*0.4 + 0.3)) #from first and third to first and second on a single
+        PTM[5][5] = player[1][0]*((y-0.5)*0.4 + 0.3) #from first and third to first and third on a single
+        
+        #0 outs, runners on second and third
+        PTM[6][1] = player[1][0]*((y-0.5)*0.4 + 0.6) #from second and third to first on a single
+        PTM[6][5] = player[1][0]*(1-((y-0.5)*0.4 + 0.6)) #from second and third to first and third on a single
+        
+        #0 outs, bases loaded
+        PTM[7][5] = player[1][0]*((y-0.5)*0.4 + 0.6) #from bases loaded to first and third on a single
+        PTM[7][7] = player[1][0]*(1-((y-0.5)*0.4 + 0.6))+self.get_walk_and_strikeout_rate(player[0])[0] #from bases loaded to bases loaded on a single   
+        
+        #----------------------------------------------------------------------------
+        
+        #1 outs, Runner on 1st starting state --> +8, +8
+        PTM[9][12] = player[1][0]*(1-((x-0.5)*0.4 + 0.3))+self.get_walk_and_strikeout_rate(player[0])[0] #from first to second on a single
+        PTM[9][13] = player[1][0]*(((x-0.5)*0.4 + 0.3)) #from first to third on a single
+        
+        #1 outs, Runner on 2nd starting state
+        PTM[10][9] = player[1][0]*((x-0.5)*0.4 + 0.6) #from second to home on a single
+        PTM[10][13] = player[1][0]*(1-((x-0.5)*0.4 + 0.6)) #from second to third on a single
+
+
+        #1 outs, runners first and second
+        PTM[12][13] = player[1][0]*((x-0.5)*0.4 + 0.6) # from first and second to first and third on a single
+        PTM[12][15] = player[1][0]*(1-((x-0.5)*0.4 + 0.6)) + self.get_walk_and_strikeout_rate(player[0])[0] # from first and second to bases loaded on a single
+        
+        #1 outs, runners first and third
+        PTM[13][12] = player[1][0]*(1-((y-0.5)*0.4 + 0.3)) #from first and third to first and second on a single
+        PTM[13][13] = player[1][0]*((y-0.5)*0.4 + 0.3) #from first and third to first and third on a single
+        
+        #1 outs, runners on second and third
+        PTM[14][9] = player[1][0]*((y-0.5)*0.4 + 0.6) #from second and third to first on a single
+        PTM[14][13] = player[1][0]*(1-((y-0.5)*0.4 + 0.6)) #from second and third to first and third on a single
+        
+        #1 outs, bases loaded
+        PTM[15][13] = player[1][0]*((y-0.5)*0.4 + 0.6) #from bases loaded to first and third on a single
+        PTM[15][15] = player[1][0]*(1-((y-0.5)*0.4 + 0.6))+self.get_walk_and_strikeout_rate(player[0])[0] #from bases loaded to bases loaded on a single     
+        
+        #------------------------------------------------------------------------------
+        
+        #2 outs, Runner on 1st starting state
+        PTM[17][20] = player[1][0]*(1-((x-0.5)*0.4 + 0.3))+self.get_walk_and_strikeout_rate(player[0])[0] #from first to second on a single
+        PTM[17][21] = player[1][0]*(((x-0.5)*0.4 + 0.3)) #from first to third on a single
+        
+        #2 outs, Runner on 2nd starting state
+        PTM[18][17] = player[1][0]*((x-0.5)*0.4 + 0.6) #from second to home on a single
+        PTM[18][21] = player[1][0]*(1-((x-0.5)*0.4 + 0.6)) #from second to third on a single
+
+
+        #2 outs, runners first and second
+        PTM[20][21] = player[1][0]*((x-0.5)*0.4 + 0.6) # from first and second to first and third on a single
+        PTM[20][23] = player[1][0]*(1-((x-0.5)*0.4 + 0.6)) + self.get_walk_and_strikeout_rate(player[0])[0] # from first and second to bases loaded on a single
+        
+        #2 outs, runners first and third
+        PTM[21][20] = player[1][0]*(1-((y-0.5)*0.4 + 0.3)) #from first and third to first and second on a single
+        PTM[21][21] = player[1][0]*((y-0.5)*0.4 + 0.3) #from first and third to first and third on a single
+        
+        #2 outs, runners on second and third
+        PTM[22][17] = player[1][0]*((y-0.5)*0.4 + 0.6) #from second and third to first on a single
+        PTM[22][21] = player[1][0]*(1-((y-0.5)*0.4 + 0.6)) #from second and third to first and third on a single
+        
+        #2 outs, bases loaded
+        PTM[23][21] = player[1][0]*((y-0.5)*0.4 + 0.6) #from bases loaded to first and third on a single
+        PTM[23][23] = player[1][0]*(1-((y-0.5)*0.4 + 0.6))+self.get_walk_and_strikeout_rate(player[0])[0] #from bases loaded to bases loaded on a single     
+        
+        
+        return PTM
+
+    def steals_adjustment(self, player):
+        #proxy for MLB average steals rate is 0.72(2023 steals per game) / singles per game (around 5)
+        PTM = player[2]
+        SpF = player[3]
+        
+        #0 outs single
+        PTM[0][1] = player[1][0]*(1-(SpF-0.5)*(0.72/5))
+        PTM[0][2] = player[1][0]*((SpF-0.5)*(0.72/5)) + player[1][1]
+        #1 out single
+        PTM[8][9] = player[1][0]*(1-(SpF-0.5)*(0.72/5))
+        PTM[8][10] = player[1][0]*((SpF-0.5)*(0.72/5)) + player[1][1]
+        #2 outs single
+        PTM[16][17] = player[1][0]*(1-(SpF-0.5)*(0.72/5))
+        PTM[16][18] = player[1][0]*((SpF-0.5)*(0.72/5)) + player[1][1]
+
+        return PTM

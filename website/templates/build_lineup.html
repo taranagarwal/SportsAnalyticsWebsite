@@ -22,7 +22,7 @@
   </div>
 
   <div id="lineup-results" style="display: none;">
-    <h4>Top 3 Lineups:</h4>
+    <h4>Top 3 Unique Lineups:</h4>
     <p id="lineup1">Lineup 1: </p>
     <p id="lineup2">Lineup 2: </p>
     <p id="lineup3">Lineup 3: </p>
@@ -83,14 +83,40 @@
     // Event listeners for Calculate and Save buttons
     let calculateBtn = document.getElementById('calculate-btn');
     let saveBtn = document.getElementById('save-btn');
-
     calculateBtn.addEventListener('click', function() {
+      document.getElementById('calculate-btn').disabled = true;
+      document.getElementById('lineup-results').style = 'display: none;';
       let playerIds = Array.from(playerInputGroups).map(group => 
         group.querySelector('.player-input').dataset.playerId
       );
       // AJAX request to calculate lineup...
-    });
+      fetch('/calculate_lineup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ player_ids: playerIds })
+      })
+      .then(response => response.json())
+      .then(data => {
 
+        let str = "";
+        for (let i = 0; i < data.length; i++) {
+          for (const [name, id] of Object.entries(data[i])) {
+            str += " " + (name, id)[0] + ",";
+          }
+          str = str.substring(0, str.length - 1);
+          document.getElementById('lineup' + (i + 1)).textContent = 'Lineup ' + (i + 1) + ': ' + str;
+          str = "";
+        }
+    document.getElementById('lineup-results').style.display = 'block';
+    document.getElementById('calculate-btn').disabled = false;
+      })
+      .catch(error => {
+        console.error('Error calculating lineup:', error);
+        document.getElementById('calculate-btn').disabled = false;
+      });
+    });
     if (saveBtn) {
       saveBtn.addEventListener('click', function() {
         let playerIds = Array.from(playerInputGroups).map(group => 
