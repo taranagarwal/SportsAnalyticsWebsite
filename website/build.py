@@ -16,10 +16,7 @@ def search_players():
     query = request.args.get('q', '')
     if not query:
         return jsonify([])
-
-    # Search for players whose name contains the query
     players = Player.query.filter(Player.player.ilike(f'%{query}%')).all()
-
     results = [{
         'id': player.id,
         'player': player.player,
@@ -30,25 +27,14 @@ def search_players():
 
 @build.route('/calculate_lineup', methods=['POST'])
 def calculate_lineup():
-    # Extract player data from request
-    # For example, let's say you receive player IDs
     player_ids = request.json['player_ids']
-    
-    # Retrieve player objects from the database
     players = Player.query.filter(Player.id.in_(player_ids)).all()
-    
-    # Convert player objects to the format expected by your calculation logic
-    # Then perform the calculations
-    optimized_lineup = perform_lineup_optimization(players)  # This is your adapted logic
-
-    # Return the result as JSON
+    optimized_lineup = perform_lineup_optimization(players)
     result = jsonify(optimized_lineup).get_json()
-    with open('response.json', 'w') as f:
-        json.dump(result, f)
     return jsonify(result)
 
 @build.route('/build-lineup')
-def login():
+def build_lineup():
     return render_template("build_lineup.html", user=current_user)
 
 @build.route('/edit')

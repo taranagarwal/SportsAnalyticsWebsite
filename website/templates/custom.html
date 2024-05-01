@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Custom Player{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Create Custom Player</h2>
+  <form id="playerForm">
+    <div class="form-group">
+        <label for="playerName">Player Name:</label>
+        <input type="text" class="form-control" id="playerName" name="player" required>
+    </div>
+    <div class="form-group">
+        <label for="season">Season (Optional):</label>
+        <input type="text" class="form-control" id="season" name="season">
+    </div>
+    <div class="form-group">
+        <label for="position">Position:</label>
+        <input type="text" class="form-control" id="position" name="pos" required>
+    </div>
+    <div class="form-group">
+        <label for="age">Age:</label>
+        <input type="number" class="form-control" id="age" name="age" required>
+    </div>
+    <div class="form-group">
+        <label for="team">Team:</label>
+        <input type="text" class="form-control" id="team" name="team" required>
+    </div>
+    <div class="form-group">
+        <label for="games">Games:</label>
+        <input type="number" class="form-control" id="games" name="games" required>
+    </div>
+    <div class="form-group">
+        <label for="plateAppearances">Plate Appearances:</label>
+        <input type="number" class="form-control" id="plateAppearances" name="plate_appearances" required>
+    </div>
+    <div class="form-group">
+        <label for="atBats">At Bats:</label>
+        <input type="number" class="form-control" id="atBats" name="at_bats" required>
+    </div>
+    <div class="form-group">
+        <label for="runs">Runs:</label>
+        <input type="number" class="form-control" id="runs" name="runs" required>
+    </div>
+    <div class="form-group">
+        <label for="hits">Hits:</label>
+        <input type="number" class="form-control" id="hits" name="hits" required>
+    </div>
+    <div class="form-group">
+        <label for="doubles">Doubles:</label>
+        <input type="number" class="form-control" id="doubles" name="doubles" required>
+    </div>
+    <div class="form-group">
+        <label for="triples">Triples:</label>
+        <input type="number" class="form-control" id="triples" name="triples" required>
+    </div>
+    <div class="form-group">
+        <label for="homeRuns">Home Runs:</label>
+        <input type="number" class="form-control" id="homeRuns" name="home_runs" required>
+    </div>
+    <div class="form-group">
+        <label for="rbis">Runs Batted In:</label>
+        <input type="number" class="form-control" id="rbis" name="rbis" required>
+    </div>
+    <div class="form-group">
+        <label for="sb">Stolen Bases:</label>
+        <input type="number" class="form-control" id="sb" name="sb" required>
+    </div>
+    <div class="form-group">
+        <label for="cs">Caught Stealing:</label>
+        <input type="number" class="form-control" id="cs" name="cs" required>
+    </div>
+    <div class="form-group">
+        <label for="bb">Walks:</label>
+        <input type="number" class="form-control" id="bb" name="bb" required>
+    </div>
+    <div class="form-group">
+        <label for="so">Strikeouts:</label>
+        <input type="number" class="form-control" id="so" name="so" required>
+    </div>
+    <div class="form-group">
+        <label for="ba">Batting Average:</label>
+        <input type="number" class="form-control" id="ba" name="ba" required>
+    </div>
+    <div class="form-group">
+        <label for="obp">On Base Percentage:</label>
+        <input type="number" class="form-control" id="obp" name="obp" required>
+    </div>
+    <div class="form-group">
+        <label for="slg">Slugging:</label>
+        <input type="number" class="form-control" id="slg" name="slg" required>
+    </div>
+    <div class="form-group">
+        <label for="ops">OPS:</label>
+        <input type="number" class="form-control" id="ops" name="ops" required>
+    </div>
+    <div class="form-group">
+        <label for="opsPlus">OPS+:</label>
+        <input type="number" class="form-control" id="opsPlus" name="ops_plus" required>
+    </div>
+    <div class="form-group">
+        <label for="tb">Total Bases:</label>
+        <input type="number" class="form-control" id="tb" name="tb" required>
+    </div>
+    <div class="form-group">
+        <label for="gdp">Ground Out Double Plays:</label>
+        <input type="number" class="form-control" id="gdp" name="gdp" required>
+    </div>
+    <div class="form-group">
+        <label for="hbp">Hit By Pitch:</label>
+        <input type="number" class="form-control" id="hbp" name="hbp" required>
+    </div>
+    <div class="form-group">
+        <label for="sacB">Sacrafice Bunts:</label>
+        <input type="number" class="form-control" id="sacB" name="sac_b" required>
+    </div>
+    <div class="form-group">
+        <label for="sacF">Sacrafice Flys:</label>
+        <input type="number" class="form-control" id="sacF" name="sac_f" required>
+    </div>
+    <div class="form-group">
+        <label for="ibb">Intentional Walks:</label>
+        <input type="number" class="form-control" id="ibb" name="ibb" required>
+    </div>
+</form>
+<div id="result"></div>
+<div class="text-center my-4">
+  <button type="button" id="calculate-btn" class="btn btn-primary" disabled>Add Player</button>
+</div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("correct");
+        let form = document.getElementById('playerForm');
+        let calculateBtn = document.getElementById('calculate-btn');
+
+        // Function to check all input fields
+        function checkForm() {
+            const inputs = form.querySelectorAll('input[required]');
+            let allFilled = true;
+            inputs.forEach(input => {
+                if (!input.value) allFilled = false;
+            });
+            calculateBtn.disabled = !allFilled;
+        }
+
+        // Attach checkForm to input events on the form
+        form.addEventListener('input', checkForm);
+
+        calculateBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const playerData = {};
+            formData.forEach((value, key) => {
+                playerData[key] = value;
+            });
+
+            // Fetch API to send data
+            fetch('/add-custom', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(playerData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').textContent = data.message || JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+{% endblock %}

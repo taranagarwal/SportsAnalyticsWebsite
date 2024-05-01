@@ -20,7 +20,7 @@ class Lineup(db.Model):
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player = db.Column(db.String(150))
-    season = db.Column(db.String(4))
+    season = db.Column(db.String(4), nullable=True)
     pos = db.Column(db.String(2))
     age = db.Column(db.Integer)
     team = db.Column(db.String(15))
