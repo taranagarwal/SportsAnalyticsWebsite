@@ -7,60 +7,60 @@
   <h2>Create Custom Player</h2>
   <form id="playerForm">
     <div class="form-group">
-        <label for="playerName">Player Name:</label>
-        <input type="text" class="form-control" id="playerName" name="player" required>
+        <label for="player">Player Name:</label>
+        <input type="text" class="form-control" id="player" name="player" required>
     </div>
     <div class="form-group">
         <label for="season">Season (Optional):</label>
         <input type="text" class="form-control" id="season" name="season">
     </div>
     <div class="form-group">
-        <label for="position">Position:</label>
-        <input type="text" class="form-control" id="position" name="pos" required>
+        <label for="pos">Position (Optional):</label>
+        <input type="text" class="form-control" id="pos" name="pos">
     </div>
     <div class="form-group">
-        <label for="age">Age:</label>
-        <input type="number" class="form-control" id="age" name="age" required>
+        <label for="age">Age (Optional):</label>
+        <input type="number" class="form-control" id="age" name="age">
     </div>
     <div class="form-group">
-        <label for="team">Team:</label>
-        <input type="text" class="form-control" id="team" name="team" required>
+        <label for="team">Team (Optional):</label>
+        <input type="text" class="form-control" id="team" name="team">
     </div>
     <div class="form-group">
-        <label for="games">Games:</label>
-        <input type="number" class="form-control" id="games" name="games" required>
+        <label for="g">Games:</label>
+        <input type="number" class="form-control" id="g" name="g" required>
     </div>
     <div class="form-group">
-        <label for="plateAppearances">Plate Appearances:</label>
-        <input type="number" class="form-control" id="plateAppearances" name="plate_appearances" required>
+        <label for="pa">Plate Appearances:</label>
+        <input type="number" class="form-control" id="pa" name="pa" required>
     </div>
     <div class="form-group">
-        <label for="atBats">At Bats:</label>
-        <input type="number" class="form-control" id="atBats" name="at_bats" required>
+        <label for="ab">At Bats:</label>
+        <input type="number" class="form-control" id="ab" name="ab" required>
     </div>
     <div class="form-group">
-        <label for="runs">Runs:</label>
-        <input type="number" class="form-control" id="runs" name="runs" required>
+        <label for="r">Runs:</label>
+        <input type="number" class="form-control" id="r" name="r" required>
     </div>
     <div class="form-group">
-        <label for="hits">Hits:</label>
-        <input type="number" class="form-control" id="hits" name="hits" required>
+        <label for="h">Hits:</label>
+        <input type="number" class="form-control" id="h" name="h" required>
     </div>
     <div class="form-group">
-        <label for="doubles">Doubles:</label>
-        <input type="number" class="form-control" id="doubles" name="doubles" required>
+        <label for="twoB">Doubles:</label>
+        <input type="number" class="form-control" id="twoB" name="twoB" required>
     </div>
     <div class="form-group">
-        <label for="triples">Triples:</label>
-        <input type="number" class="form-control" id="triples" name="triples" required>
+        <label for="threeB">Triples:</label>
+        <input type="number" class="form-control" id="threeB" name="threeB" required>
     </div>
     <div class="form-group">
-        <label for="homeRuns">Home Runs:</label>
-        <input type="number" class="form-control" id="homeRuns" name="home_runs" required>
+        <label for="hr">Home Runs:</label>
+        <input type="number" class="form-control" id="hr" name="hr" required>
     </div>
     <div class="form-group">
-        <label for="rbis">Runs Batted In:</label>
-        <input type="number" class="form-control" id="rbis" name="rbis" required>
+        <label for="rbi">Runs Batted In:</label>
+        <input type="number" class="form-control" id="rbi" name="rbi" required>
     </div>
     <div class="form-group">
         <label for="sb">Stolen Bases:</label>
@@ -96,7 +96,7 @@
     </div>
     <div class="form-group">
         <label for="opsPlus">OPS+:</label>
-        <input type="number" class="form-control" id="opsPlus" name="ops_plus" required>
+        <input type="number" class="form-control" id="opsPlus" name="opsPlus" required>
     </div>
     <div class="form-group">
         <label for="tb">Total Bases:</label>
@@ -111,16 +111,20 @@
         <input type="number" class="form-control" id="hbp" name="hbp" required>
     </div>
     <div class="form-group">
-        <label for="sacB">Sacrafice Bunts:</label>
-        <input type="number" class="form-control" id="sacB" name="sac_b" required>
+        <label for="sh">Sacrafice Bunts:</label>
+        <input type="number" class="form-control" id="sh" name="sh" required>
     </div>
     <div class="form-group">
-        <label for="sacF">Sacrafice Flys:</label>
-        <input type="number" class="form-control" id="sacF" name="sac_f" required>
+        <label for="sf">Sacrafice Flys:</label>
+        <input type="number" class="form-control" id="sf" name="sf" required>
     </div>
     <div class="form-group">
         <label for="ibb">Intentional Walks:</label>
         <input type="number" class="form-control" id="ibb" name="ibb" required>
+    </div>
+    <div class="form-group">
+        <label for="spf">Speed Factor:</label>
+        <input type="number" class="form-control" id="spf" name="spf" required>
     </div>
 </form>
 <div id="result"></div>
@@ -128,21 +132,23 @@
   <button type="button" id="calculate-btn" class="btn btn-primary" disabled>Add Player</button>
 </div>
 </div>
-{% endblock %}
 
 {% block javascript %}
 <script type="text/javascript">
+    console.log("Script loaded");
+
     document.addEventListener('DOMContentLoaded', function() {
-        console.log("correct");
         let form = document.getElementById('playerForm');
         let calculateBtn = document.getElementById('calculate-btn');
 
         // Function to check all input fields
         function checkForm() {
-            const inputs = form.querySelectorAll('input[required]');
             let allFilled = true;
+            const inputs = form.querySelectorAll('input[required]');
             inputs.forEach(input => {
-                if (!input.value) allFilled = false;
+                if (!input.value.trim()) {  // Ensure whitespace isn't considered as filled
+                    allFilled = false;
+                }
             });
             calculateBtn.disabled = !allFilled;
         }
@@ -157,16 +163,26 @@
             formData.forEach((value, key) => {
                 playerData[key] = value;
             });
-
+            console.log(playerData)
             // Fetch API to send data
-            fetch('/add-custom', {
+            fetch('/add_custom', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(playerData)
+                body: JSON.stringify({ stat: playerData })
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('result').textContent = data.message || JSON.stringify(data);
+                if (data.message === "Player added successfully") {
+                    window.location.reload();
+                } else {
+                    //document.getElementById('result').textContent = data.message || JSON.stringify(data);
+                    const originalInputs = playerData
+                    window.location.reload();
+                    //for (let [key, value] of originalInputs){
+                        //let oldInput = document.getElementById(key);
+                        //oldInput.value = key;
+                    //}
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -174,4 +190,5 @@
         });
     });
 </script>
+{% endblock %}
 {% endblock %}
