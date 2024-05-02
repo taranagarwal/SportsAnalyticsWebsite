@@ -34,7 +34,6 @@ def add_custom():
     type = ''
     count = 0
     for id in player_data:
-        print(id)
         try:
             if id in ['season','pos', 'age', 'team'] and player_data[id] == '':
                 pass
@@ -45,7 +44,9 @@ def add_custom():
                 type = 'float'
                 player_data[id] = float(player_data[id])
             elif id == 'player':
-                if Player.query.filter_by(player=player_data[id], isCustom=True, user_id=current_user.id).first():
+                #this check doesn't work
+                print(id)
+                if Player.query.filter(Player.player.ilike(player_data[id]), Player.isCustom == True, Player.user_id == current_user.id).first():
                     if count == 0: "player name must be unique"
                     else: errorMsg += ", player name must be unique"
                 if len(player_data[id]) > 150:
@@ -68,7 +69,6 @@ def add_custom():
                     else: errorMsg += ", position must be 150 characters or less"
                     count+=1
         except ValueError:
-            print(id)
             if count == 0: errorMsg = errorMsg + f'{id_to_name[id]} must be of the type: {type}'
             else: errorMsg = errorMsg + f', {id_to_name[id]} must be of the type: {type}'
             count+=1
@@ -111,6 +111,7 @@ def add_custom():
         isCustom=True
     )
 
+    print(Player.query.filter_by(player=player_data['player']).first())
     db.session.add(new_player)
     db.session.commit()
 

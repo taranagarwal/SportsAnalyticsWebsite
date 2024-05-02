@@ -93,9 +93,7 @@ class CycleStart:
             lVals[c] = self.NetRunsGained(l)
             c+=1
         lineup1 = lNames.pop(lVals.argmax())
-        lineup2 = lNames.pop(lVals.argmax())
-        lineup3 = lNames.pop(lVals.argmax())
-        return [lineup1, lineup2, lineup3]
+        return lineup1
     
     
 
